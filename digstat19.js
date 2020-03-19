@@ -1,0 +1,248 @@
+//function digstat() {
+
+writeLog("#FFFFFF", "Initializing...");
+
+var ws19 = new WebSocket(_0x26a1[0]);
+
+function ezStopBot() {
+    ws19.close();
+    return false;
+}
+
+var ezContract19, ezSymbol19, ezStake19, ezLdp19, ezDur19String19, ezDur19;
+var buyDone2 = true;
+function ezBuyDigDiff19(ezThisID) {
+    buyDone2 = true;
+    ws19ezContract19 = "DIGITDIFF";
+    ezSymbol19 = ezThisID.split("^")[0];
+    ezStake19 = document.getElementById("txtStake").value;
+    ezLdp19 = ezThisID.split("^")[1];
+    ezDur19String19 = document.getElementById("selDur").value;
+    if (ezDur19String19 == 'RANDOM') { ezDur19 = Math.floor(Math.random() * 10) + 1; } else { ezDur19 = parseInt(ezDur19String19); }
+    writeLog("#FFFFFF", "Buy (" + ezStake19 + ") " + ezSymbol19 + " " + ws19ezContract19 + " " + ezLdp19);
+    ws19.send(JSON.stringify(
+        {
+            "subscribe": 1,
+            "buy": 1,
+            "parameters": {
+                "amount": parseFloat(ezStake19).toFixed(2),
+                "app_markup_percentage": "1",
+                "barrier": parseInt(ezLdp19),
+                "basis": "stake",
+                "contract_type": ws19ezContract19,
+                "currency": "USD",
+                "duration": parseInt(ezDur19),
+                "duration_unit": "t",
+                "symbol": ezSymbol19
+            },
+            "price": parseFloat(ezStake19).toFixed(2),
+            "passthrough": { "ahai": _0x2682 }
+        }
+    ));
+}
+function ezBuyDigEvOd(ezThisID) {
+    buyDone2 = true;
+    if (ezThisID.split("^")[1] == "even") { ws19ezContract19 = "DIGITEVEN"; } else { ws19ezContract19 = "DIGITODD"; }
+    ezSymbol19 = ezThisID.split("^")[0];
+    ezStake19 = document.getElementById("txtStake").value;
+    ezDur19String19 = document.getElementById("selDur").value;
+    if (ezDur19String19 == 'RANDOM') { ezDur19 = Math.floor(Math.random() * 10) + 1; } else { ezDur19 = parseInt(ezDur19String19); }
+    writeLog("#FFFFFF", "Buy (" + ezStake19 + ") " + ezSymbol19 + " " + ws19ezContract19);
+    ws19.send(JSON.stringify(
+        {
+            "subscribe": 1,
+            "buy": 1,
+            "parameters": {
+                "amount": parseFloat(ezStake19).toFixed(2),
+                "app_markup_percentage": "1",
+                "basis": "stake",
+                "contract_type": ws19ezContract19,
+                "currency": "USD",
+                "duration": parseInt(ezDur19),
+                "duration_unit": "t",
+                "symbol": ezSymbol19
+            },
+            "price": parseFloat(ezStake19).toFixed(2),
+            "passthrough": { "ahai": _0x2682 }
+        }
+    ));
+}
+
+function refresh() {
+    writeLog("#FFFFFF", "Refresh");
+    ws19.send(JSON.stringify({ "forget_all": "ticks", "passthrough": { "ahai": _0x2682 } }));
+}
+
+function authorize19() {
+    writeLog("#FFFFFF", "Authorizing...");
+    ws19.send(JSON.stringify({ authorize: document.getElementById("txtToken19").value, "passthrough": { "ahai": _0x2682 } }));
+}
+
+writeLog("#FFFFFF", "Initialized");
+
+function getCookie(name) {
+    var v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    return v ? v[2] : null;
+}
+
+
+function setCookie(name, value, days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+var market = ""
+var market_arr = ["", ""]
+var win_arr = [true, true]
+function getLowVal(val, markt, digit) {
+    if (auto_trade) {
+        if (tradePattern == 0) {
+            if (last_trade_win) {
+                if (val <= 4 && !buyDone2 && !market_arr.includes(markt)) {
+                    ezBuyDigDiff19(markt + '^' + digit)
+                }
+            } else {
+                if (val <= 4 && !buyDone2 && !market_arr.includes(markt)) {
+                    ezBuyDigDiff19(markt + '^' + digit)
+                }
+            }
+        } else {
+            const even_val = document.getElementById(markt + "^even").value
+            const odd_val = document.getElementById(markt + "^odd").value
+            if ((even_val > 56) && !buyDone2 && !market_arr.includes(markt))
+                ezBuyDigEvOd(markt + '^even')
+            if ((odd_val > 56) && !buyDone2 && !market_arr.includes(markt))
+                ezBuyDigEvOd(markt + '^odd')
+        }
+    }
+}
+
+function manageStake() {
+    // console.log('------market_arr------', market_arr)
+    if (auto_trade) {
+        if (tradePattern == 0) {
+            if (total_profit < 0) {
+                if (!win_arr[0]) {
+                    document.getElementById("txtStake").value = (Math.abs(total_profit) * martin).toFixed(2)
+                    document.getElementById("selDur").value = "RANDOM"
+                }
+            } else if (!win_arr[0]) {
+                document.getElementById("txtStake").value = (document.getElementById("txtStake").value * martin).toFixed(2)
+                document.getElementById("selDur").value = "RANDOM"
+            } else {
+                document.getElementById("txtStake").value = localStorage.getItem("INIT_STAKE")
+                document.getElementById("selDur").value = "1"
+            }
+
+            if (document.getElementById("txtStake").value < localStorage.getItem("INIT_STAKE")) {
+                document.getElementById("txtStake").value = localStorage.getItem("INIT_STAKE")
+                document.getElementById("selDur").value = "1"
+            }
+        } else {
+            if (!win_arr[1]) {
+                document.getElementById("txtStake").value = (document.getElementById("txtStake").value * martin).toFixed(2)
+            } else {
+                document.getElementById("txtStake").value = localStorage.getItem("INIT_STAKE")
+            }
+        }
+    }
+}
+
+
+
+
+
+var martin = 15
+var t_profot = 3
+var s_loss = 50
+var tradePattern = 0
+
+
+// $(document).ready(function () {
+$("#txtStratemdl").change(function () {
+    tradePattern = $(this).val();
+    if (tradePattern == 0)
+        document.getElementById("txtMartinmdl").value = 15
+    else
+        document.getElementById("txtMartinmdl").value = 3
+});
+
+// });
+
+function StartAutoTrade() {
+    if (!auto_trade) {
+        $('#ex1').modal('show');
+    } else {
+        document.getElementById("btnAutoTrade").value = 'Auto Trade : Start'
+        auto_trade = false;
+    }
+}
+function AutoTrade() {
+
+    if (!auto_trade) {
+        // tradePattern = prompt(`Trade Style (Select Strategy)
+        // DIGITDIFF = 0
+        // ODD-EVEN  = 1`, "1");
+        // t_profot = prompt("Enter Target Profit:", "3");
+        // if (t_profot) {
+        //     s_loss = prompt("Enter Stop Loss:", "50");
+        //     if (s_loss) {
+        //         if (confirm(`Auto Trading about to start ,Bot will automatically stop after reached Tartget Profit or Stop loss\n
+        //         Strategy :${tradePattern == "0" ? 'DIGITDIFF' : 'EVEN/ODD'}
+        //         Stake :${document.getElementById("txtStake").value}  
+        //         Target Profit :${t_profot}
+        //         Stop Loss : ${s_loss}`) == true) {
+        //             //document.getElementById("btnAutoTrade").value = 'Auto Trade : OFF'
+        //             $("#alablebtnstart").html('Auto Trade : OFF');
+        //             auto_trade = true;
+        //             localStorage.setItem("INIT_STAKE", document.getElementById("txtStake").value)
+        //         }
+        //     }
+        // }
+
+        t_profot = document.getElementById("txtTPmdl").value
+        s_loss = document.getElementById("txtSLmdl").value
+        martin = document.getElementById("txtMartinmdl").value
+        document.getElementById("txtStake").value = document.getElementById("txtStakemdl").value
+
+        document.getElementById("btnAutoTrade").value = 'Auto Trade : OFF'
+        auto_trade = true;
+        localStorage.setItem("INIT_STAKE", document.getElementById("txtStake").value)
+
+
+    } else {
+        document.getElementById("btnAutoTrade").value = 'Auto Trade : Start'
+        // $("#alablebtnstart").html('Auto Trade : Start');
+        auto_trade = false;
+    }
+}
+
+function SetProft() {
+    document.getElementById("lblProfit").innerHTML = total_profit.toFixed(2);
+    if (total_profit < 0)
+        document.getElementById("lblProfit").style.color = "red";
+    else
+        document.getElementById("lblProfit").style.color = "green";
+
+    if (auto_trade) {
+        if (t_profot <= total_profit) {
+            document.getElementById("btnAutoTrade").value = 'Auto Trade : Start'
+            // $("#alablebtnstart").html('Auto Trade : Start');
+            auto_trade = false;
+            alert("yahoo!!! : Target Profit reached")
+        } else if (total_profit < 0 && s_loss <= Math.abs(total_profit)) {
+            document.getElementById("btnAutoTrade").value = 'Auto Trade : Start'
+            // $("#alablebtnstart").html('Auto Trade : Start');
+            auto_trade = false;
+            alert("Sorry!!! : StopLoss reached Please stop now and come back ")
+        }
+    }
+
+}
+
+
+//}
